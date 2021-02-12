@@ -14,7 +14,7 @@ class TagSerializer(serializers.PrimaryKeyRelatedField, serializers.ModelSeriali
 
 
 class TaskListSerializer(serializers.ModelSerializer):
-    tags = TagSerializer(read_only=True, many=True, required=False)
+    tags = TagSerializer(read_only=True, many=True)
 
     class Meta:
         model = Task
