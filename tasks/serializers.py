@@ -10,20 +10,19 @@ class TagSerializer(serializers.PrimaryKeyRelatedField, serializers.ModelSeriali
 
     class Meta:
         model = Tag
-        fields = ['title']
+        fields = ['id', 'title']
 
 
 class TaskListSerializer(serializers.ModelSerializer):
-    tags = TagSerializer(queryset=Tag.objects.all(), many=True, required=False)
-    description = serializers.CharField(write_only=True)
+    tags = TagSerializer(read_only=True, many=True, required=False)
 
     class Meta:
         model = Task
-        fields = ['id', 'title', 'description', 'date', 'tags']
+        fields = ['id', 'title', 'date', 'tags']
 
 
 class TaskSerializer(serializers.ModelSerializer):
-    tags = TagSerializer(queryset=Tag.objects.all(), many=True)
+    tags = TagSerializer(read_only=True, many=True)
 
     class Meta:
         model = Task

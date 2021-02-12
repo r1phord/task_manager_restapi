@@ -1,6 +1,7 @@
 from rest_framework import generics
 from rest_framework import permissions
 from rest_framework import filters
+from rest_framework import viewsets
 
 from tasks.permissions import IsOwner
 from tasks.models import Task, Tag
@@ -9,7 +10,6 @@ from tasks.serializers import TaskSerializer, TaskListSerializer, UserSerializer
 
 class TagList(generics.ListCreateAPIView):
     serializer_class = TagSerializer
-    # permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         user = self.request.user
@@ -19,24 +19,26 @@ class TagList(generics.ListCreateAPIView):
         serializer.save(created_by=self.request.user)
 
 
-class TaskList(generics.ListCreateAPIView):
-    serializer_class = TaskListSerializer
-    permission_classes = [permissions.IsAuthenticated]
+class TaskViewSet(viewsets.ModelViewSet):
+    permission_classes = [permissions.IsAuthenticated, IsOwner]
     filter_backends = [filters.SearchFilter]
     search_fields = ['title', 'tags__title']
 
     def get_queryset(self):
         user = self.request.user
-        return Task.objects.filter(owner_id=user.id)
+        return Task.objects.filter(owner=user)
+
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return TaskListSerializer
+        else:
+            return TaskSerializer
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
 
-
-class TaskDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Task.objects.all()
-    serializer_class = TaskSerializer
-    permission_classes = [IsOwner, permissions.IsAuthenticated]
+    # def perform_update(self, serializer):
+    #     pass
 
 
 class RegisterUser(generics.CreateAPIView):
