@@ -36,7 +36,7 @@ class TaskViewSet(viewsets.ModelViewSet):
 
     def add_tags_to_task(self, user, task, tag_names):
         for tag_name in tag_names:
-            tag, created = Tag.objects.get_or_create(title=tag_name['title'], created_by=user)
+            tag, created = Tag.objects.get_or_create(title=tag_name, created_by=user)
             task.tags.add(tag)
 
     def perform_create(self, serializer):
